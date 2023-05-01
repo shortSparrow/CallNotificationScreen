@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CallNotificationScreen</string>
+    <string name="show_scheduled_full_screen_intent_lock_screen">Scheduled full screen intent for lock screen</string>
+</resources>
