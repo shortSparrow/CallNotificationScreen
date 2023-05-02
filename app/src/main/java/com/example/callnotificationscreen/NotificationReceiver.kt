@@ -9,10 +9,14 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
@@ -20,6 +24,10 @@ import androidx.lifecycle.MutableLiveData
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Picasso.LoadedFrom
 import com.squareup.picasso.Target
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.Executors
 
 
 class NotificationReceiver : BroadcastReceiver() {
@@ -29,21 +37,23 @@ class NotificationReceiver : BroadcastReceiver() {
     private val isLoadingAvatarComplete: MutableLiveData<Boolean> = MutableLiveData(false)
 
     override fun onReceive(context: Context, intent: Intent) {
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationId = intent.getIntExtra(NOTIFICATION_ID, 0)
+
         if (intent.action == "DISMISS") {
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val notificationId = intent.getIntExtra(NOTIFICATION_ID, 0)
-            Log.d("XXX", notificationId.toString())
             notificationManager.cancel(notificationId)
-
+            // TODO remove Incoming Activity
         } else {
+            Log.d("XXXX", "ELSE")
             sendNotification(context)
-
         }
     }
 
     private fun sendNotification(context: Context) {
+//        loadAvatar("https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes-thumbnail.png")
         loadAvatar("https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg")
+
         isLoadingAvatarComplete.observeForever {
             if (it == true) {
                 val notificationId = System.currentTimeMillis().toInt()
@@ -68,6 +78,7 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun loadAvatar(url: String) {
         Picasso.get()
             .load(url)
+            .resize(200,200) // must set because for large file (4 mb) not call success or failure
             .into(object : Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: LoadedFrom?) {
                     bitmapAvatar = bitmap
@@ -89,7 +100,7 @@ class NotificationReceiver : BroadcastReceiver() {
         context: Context,
         notificationId: Int
     ): NotificationCompat.Builder {
-        val callScreenIntent = Intent(context, CallActivity::class.java)
+        val callScreenIntent = Intent(context, IncomingCallActivity::class.java)
         val callScreenIntentPendingIntent = PendingIntent.getActivity(
             context,
             ACCEPT_REQUEST_CODE,
@@ -100,13 +111,33 @@ class NotificationReceiver : BroadcastReceiver() {
         val dismissIntent = Intent(context, NotificationReceiver::class.java)
         dismissIntent.action = "DISMISS"
         dismissIntent.putExtra(NOTIFICATION_ID, notificationId)
+
         val dismissPendingIntent = PendingIntent.getBroadcast(
             context,
             notificationId,
             dismissIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE // was PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
         // I pass here notificationId because if use constant i get error when  intent.getIntExtra(NOTIFICATION_ID, 0) in Receive has always old value
+
+
+        val acceptIntent = Intent(context, ConversationActivity::class.java)
+        acceptIntent.putExtra(NOTIFICATION_ID, notificationId)
+        val acceptPendingIntent = PendingIntent.getActivity(
+            context,
+            notificationId, // TODO maybe change because the same as dismissPendingIntent
+            acceptIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        )
+
+        val remoteView =
+            RemoteViews("com.example.callnotificationscreen", R.layout.custom_notification_v3)
+        val remoteViewCompact =
+            RemoteViews("com.example.callnotificationscreen", R.layout.custom_notification_compact)
+
+        remoteView.setOnClickPendingIntent(R.id.accept_button, acceptPendingIntent)
+        remoteView.setOnClickPendingIntent(R.id.decline_button, dismissPendingIntent)
+
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.arrow_up_float)
@@ -114,19 +145,20 @@ class NotificationReceiver : BroadcastReceiver() {
 //            .setContentText("Hello World!")
             .setPriority(NotificationCompat.PRIORITY_MAX) // must be at least HIGH
             .setSound(soundUri)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // not sure that is needed
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setContentIntent(callScreenIntentPendingIntent)
             .setFullScreenIntent(callScreenIntentPendingIntent, true)
 
-        val remoteView =
-            RemoteViews("com.example.callnotificationscreen", R.layout.custom_notification_v2)
-        remoteView.setOnClickPendingIntent(R.id.accept_button, callScreenIntentPendingIntent) // TODO on open activity hide notification (hands on effect)
-        remoteView.setOnClickPendingIntent(R.id.decline_button, dismissPendingIntent)
-
-        builder.setCustomContentView(remoteView)
+        builder.setCustomContentView(remoteViewCompact)
+        builder.setCustomBigContentView(remoteView)
+        builder.setCustomHeadsUpContentView(remoteView)
         remoteView.setImageViewBitmap(R.id.avatar, bitmapAvatar);
         remoteView.setTextViewText(R.id.person_name, "Lubov")
+        remoteViewCompact.setTextViewText(R.id.person_name, "Lubov")
+        remoteViewCompact.setImageViewBitmap(R.id.avatar, bitmapAvatar)
+
 
         return builder
     }
@@ -165,6 +197,33 @@ class NotificationReceiver : BroadcastReceiver() {
         }
     }
 }
+
+// // NEW
+//        val executor = Executors.newSingleThreadExecutor()
+//        val handler = Handler(Looper.getMainLooper())
+//
+//        executor.execute {
+//            val imageUrl = url
+//            var bitmap: Bitmap? = null
+//            try {
+//                val connection = URL(imageUrl).openConnection() as HttpURLConnection
+//                connection.connect()
+//                val input = connection.inputStream
+//                bitmap = BitmapFactory.decodeStream(input)
+//            } catch (e: IOException) {
+//                isLoadingAvatarComplete.value = true
+//                e.printStackTrace()
+//            }
+//            handler.post(Runnable {
+//                //UI Thread work here
+//                Log.d("XXX", "onBitmapLoaded")
+//                if (bitmap != null) {
+//                    bitmapAvatar = bitmap
+//                }
+//                isLoadingAvatarComplete.value = true
+//            })
+//        }
+
 
 
 //        class DownloadImageTask : AsyncTask<String, Void, Bitmap>() {

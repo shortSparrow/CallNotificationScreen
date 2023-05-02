@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.view.WindowManager
 
-class CallActivity : AppCompatActivity() {
+class IncomingCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         unlockScreen()
-        setContentView(R.layout.activity_call)
+        setContentView(R.layout.activity_incoming_call)
     }
 
     private fun unlockScreen() {

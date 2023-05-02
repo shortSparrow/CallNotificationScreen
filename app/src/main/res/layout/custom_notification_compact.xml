@@ -13,8 +13,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
-        tools:src="@drawable/ic_launcher_background"
-        android:contentDescription="avatar" />
+        android:contentDescription="avatar"
+        tools:src="@drawable/ic_launcher_background" />
 
     <TextView
         android:id="@+id/person_name"
@@ -23,9 +23,10 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
-        tools:text="Volkov Oleksandr"
         android:textAlignment="center"
-        android:textStyle="bold" />
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Volkov Oleksandr" />
 
     <TextView
         android:id="@+id/description"
@@ -36,31 +37,7 @@
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
         android:text="incoming call"
-        android:textAlignment="center" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/description"
-        android:layout_marginTop="15dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/accept_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/green"
-            android:text="Accept" />
-
-        <Button
-            android:id="@+id/decline_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="70dp"
-            android:backgroundTint="@color/red"
-            android:text="Decline" />
-    </LinearLayout>
-
+        android:textAlignment="center"
+        android:textSize="15sp" />
 
 </RelativeLayout>

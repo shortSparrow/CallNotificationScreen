@@ -13,8 +13,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
-        tools:src="@drawable/ic_launcher_background"
-        android:contentDescription="avatar" />
+        android:contentDescription="avatar"
+        tools:src="@drawable/ic_launcher_background" />
 
     <TextView
         android:id="@+id/person_name"
@@ -23,9 +23,10 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
-        tools:text="Volkov Oleksandr"
         android:textAlignment="center"
-        android:textStyle="bold" />
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:text="Volkov Oleksandr" />
 
     <TextView
         android:id="@+id/description"
@@ -36,7 +37,8 @@
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
         android:text="incoming call"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textSize="15sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,17 +52,23 @@
             android:id="@+id/accept_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/green"
-            android:text="Accept" />
+            android:background="@drawable/accept_notification_button_bg"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:text="Accept"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/decline_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
-            android:backgroundTint="@color/red"
-            android:text="Decline" />
-    </LinearLayout>
+            android:background="@drawable/dismiss_notification_button_bg"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:text="Decline"
+            android:textColor="@color/white" />
 
+    </LinearLayout>
 
 </RelativeLayout>
