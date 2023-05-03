@@ -3,21 +3,17 @@ package com.example.callnotificationscreen.presentation
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
-import com.example.callnotificationscreen.domain.NotificationHandler
-import com.example.callnotificationscreen.domain.NotificationReceiver
+import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.R
+import com.example.callnotificationscreen.domain.NotificationReceiver
 import com.example.callnotificationscreen.utils.SCHEDULE_TIME
+import com.example.callnotificationscreen.utils.XiomiHelper
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity() {
-    fun dd() {
-        Log.d("XXX", "Canceled MainActivity")
-    }
 
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -26,9 +22,11 @@ class MainActivity : AppCompatActivity() {
             makeScheduleNotification()
         }
 
-        NotificationHandler.setDismissPressListener(::dd)
-        NotificationHandler.removeDismissPressListener(::dd)
-
+        // need for show incomingCall activity on lock screen for xiomi
+        val xiomiHelper = XiomiHelper(this)
+        if (xiomiHelper.isXiaomi() && xiomiHelper.isShowOnLockScreenPermissionEnable() != true) {
+            xiomiHelper.navigateToLockScreenPermission()
+        }
     }
 
     private fun makeScheduleNotification() {
@@ -46,6 +44,5 @@ class MainActivity : AppCompatActivity() {
             setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
         }
     }
-
 
 }

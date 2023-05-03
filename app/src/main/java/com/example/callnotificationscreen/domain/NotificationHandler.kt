@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
@@ -16,6 +17,7 @@ import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.presentation.ConversationActivity
+import com.example.callnotificationscreen.presentation.DismissDummyActivity
 import com.example.callnotificationscreen.presentation.IncomingCallActivity
 import com.example.callnotificationscreen.utils.ACCEPT_INCOMING_CALL_REQUEST_CODE
 import com.example.callnotificationscreen.utils.CHANNEL_ID
@@ -111,14 +113,17 @@ object NotificationHandler : NotificationClickListener() {
             context,
             GO_TO_CALL_SCREEN_REQUEST_CODE,
             callScreenIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val dismissIntent = Intent(context, NotificationReceiver::class.java)
-        dismissIntent.action = "DISMISS"
+        val dismissIntent = Intent(context, DismissDummyActivity::class.java)
         dismissIntent.putExtra(NOTIFICATION_ID, notificationId)
+        // add these flags to open activity in new task
+        // the same you can do just add taskAffinity in AndroidManifest
+        // this allow us to close new task and don't affect mainActivity
+        dismissIntent.addFlags(FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
 
-        val dismissPendingIntent = PendingIntent.getBroadcast(
+        val dismissPendingIntent = PendingIntent.getActivity(
             context,
             DISMISS_INCOMING_CALL_REQUEST_CODE,
             dismissIntent,
@@ -131,7 +136,7 @@ object NotificationHandler : NotificationClickListener() {
             context,
             ACCEPT_INCOMING_CALL_REQUEST_CODE,
             acceptIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val remoteView =

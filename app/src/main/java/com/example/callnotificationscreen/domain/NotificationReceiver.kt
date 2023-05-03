@@ -8,12 +8,8 @@ import android.util.Log
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == "DISMISS") {
-            NotificationHandler.dismissedButtonClicked(context, intent)
-        } else {
-            Log.d("XXXX", "sendNotification")
-            NotificationHandler.sendNotification(context)
-        }
+        Log.d("XXXX", "sendNotification")
+        NotificationHandler.sendNotification(context)
     }
 
 

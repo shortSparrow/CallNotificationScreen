@@ -1,13 +1,14 @@
 package com.example.callnotificationscreen.presentation
 
 import android.app.KeyguardManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
 import android.view.WindowManager
-import com.example.callnotificationscreen.domain.NotificationHandler
+import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.R
+import com.example.callnotificationscreen.domain.NotificationHandler
+
 
 class IncomingCallActivity : AppCompatActivity() {
     private fun dismissActionListener() {
@@ -18,10 +19,12 @@ class IncomingCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         unlockScreen()
+
         setContentView(R.layout.activity_incoming_call)
         Log.d("XXX", "IncomingCallActivity onCreate")
         NotificationHandler.setDismissPressListener(::dismissActionListener)
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

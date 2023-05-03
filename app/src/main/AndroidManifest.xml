@@ -22,18 +22,22 @@
             android:name=".presentation.ConversationActivity"
             android:exported="false" />
 
+        <!--      taskAffinity need for opening activity in different task  -->
+        <!--        android:taskAffinity="com.dismiss_dummy.activity" -->
+        <activity
+            android:name=".presentation.DismissDummyActivity"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
         <receiver
             android:name=".domain.NotificationReceiver"
-            android:enabled="true"
-            android:exported="true" />
+            android:enabled="true" />
 
-        <!--showOnLockScreen maybe not needed -->
-        <!--noHistory його не буде в recently коли закрию (finish) -->
         <activity
             android:name=".presentation.IncomingCallActivity"
             android:exported="false"
-            android:noHistory="true"
-            android:showOnLockScreen="true" />
+            android:noHistory="true" />
+
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true">
