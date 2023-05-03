@@ -19,23 +19,23 @@
         android:theme="@style/Theme.CallNotificationScreen"
         tools:targetApi="31">
         <activity
-            android:name=".ConversationActivity"
+            android:name=".presentation.ConversationActivity"
             android:exported="false" />
 
         <receiver
-            android:name=".NotificationReceiver"
+            android:name=".domain.NotificationReceiver"
             android:enabled="true"
             android:exported="true" />
 
         <!--showOnLockScreen maybe not needed -->
         <!--noHistory його не буде в recently коли закрию (finish) -->
         <activity
-            android:name=".IncomingCallActivity"
+            android:name=".presentation.IncomingCallActivity"
             android:exported="false"
             android:noHistory="true"
             android:showOnLockScreen="true" />
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
