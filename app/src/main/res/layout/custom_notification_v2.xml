@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
         tools:src="@drawable/ic_launcher_background"
-        android:contentDescription="avatar" />
+        android:contentDescription="@string/person_avatar" />
 
     <TextView
         android:id="@+id/person_name"
@@ -35,7 +35,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
-        android:text="incoming call"
+        android:text="@string/incoming_call"
         android:textAlignment="center" />
 
     <LinearLayout
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/green"
-            android:text="Accept" />
+            android:text="@string/accept" />
 
         <Button
             android:id="@+id/decline_button"
@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
             android:backgroundTint="@color/red"
-            android:text="Decline" />
+            android:text="@string/decline" />
     </LinearLayout>
 
 

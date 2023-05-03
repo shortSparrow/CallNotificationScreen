@@ -13,7 +13,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
-        android:contentDescription="avatar"
+        android:contentDescription="@string/person_avatar"
         tools:src="@drawable/ic_launcher_background" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
-        android:text="incoming call"
+        android:text="@string/incoming_call"
         android:textAlignment="center"
         android:textSize="15sp" />
 
@@ -55,7 +55,7 @@
             android:background="@drawable/accept_notification_button_bg"
             android:paddingHorizontal="20dp"
             android:paddingVertical="8dp"
-            android:text="Accept"
+            android:text="@string/accept"
             android:textColor="@color/white" />
 
         <Button
@@ -66,7 +66,7 @@
             android:background="@drawable/dismiss_notification_button_bg"
             android:paddingHorizontal="20dp"
             android:paddingVertical="8dp"
-            android:text="Decline"
+            android:text="@string/decline"
             android:textColor="@color/white" />
 
     </LinearLayout>

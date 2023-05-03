@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">CallNotificationScreen</string>
     <string name="show_scheduled_full_screen_intent_lock_screen">Scheduled full screen intent for lock screen</string>
+    <string name="incoming_call">incoming call</string>
+    <string name="person_avatar">avatar</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>
