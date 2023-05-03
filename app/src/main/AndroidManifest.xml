@@ -5,8 +5,8 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /> <!-- without this will not open Call Activity -->
-    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- for loading image to notification -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- for loading image to notification -->
 
     <application
         android:allowBackup="true"
@@ -22,12 +22,20 @@
             android:name=".presentation.ConversationActivity"
             android:exported="false" />
 
-        <!--      taskAffinity need for opening activity in different task  -->
-        <!--        android:taskAffinity="com.dismiss_dummy.activity" -->
+        <!--
+            taskAffinity need for opening activity in different task (work fine without it (because we add FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK flags),
+            but have a problem with android 7-11 (below 7 I didn't check). In android 7-11 after opening MainActivity and call schedule notification and then press go back button
+            (activity closed but still present in recent apps), wait appearing of the push notification, press decline button and see the MainActivity is removed from recent
+            if add android:taskAffinity="com.dismiss_dummy.activity" everything works fine
+
+            Theme.Transparent for avoiding animation appearing new activity (happens sometimes)
+        -->
         <activity
             android:name=".presentation.DismissDummyActivity"
             android:excludeFromRecents="true"
-            android:exported="false" />
+            android:exported="false"
+            android:taskAffinity="com.dismiss_dummy.activity"
+            android:theme="@style/Theme.Transparent" />
 
         <receiver
             android:name=".domain.NotificationReceiver"

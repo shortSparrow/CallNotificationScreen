@@ -8,7 +8,7 @@ import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.utils.NOTIFICATION_ID
 
 class ConversationActivity : AppCompatActivity() {
-    // TODO here ypu can implement your call logic
+    // TODO here you can implement your call logic
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

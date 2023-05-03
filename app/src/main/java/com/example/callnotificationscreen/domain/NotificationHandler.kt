@@ -33,6 +33,7 @@ import kotlin.random.Random
 
 val DEFAULT_NOTIFICATION_ID = Random.nextInt(0, 1000)
 
+// TODO add ability handle multiple incoming calls
 object NotificationHandler : NotificationClickListener() {
     private var notificationId: Int = DEFAULT_NOTIFICATION_ID
     private val soundUri = // TODO there add also dynamic packageID
@@ -42,6 +43,7 @@ object NotificationHandler : NotificationClickListener() {
 
     fun sendNotification(context: Context) {
         scope.launch {
+            // TODO add handler on no internet connection
             val request =
                 async { loadAvatar("https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg") }
             val avatarIcon = request.await()

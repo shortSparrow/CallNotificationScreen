@@ -12,7 +12,6 @@ class NotificationReceiver : BroadcastReceiver() {
         NotificationHandler.sendNotification(context)
     }
 
-
     companion object {
         fun build(context: Context): Intent {
             return Intent(context, NotificationReceiver::class.java)
