@@ -1,6 +1,7 @@
 package com.example.callnotificationscreen.presentation
 
 import android.app.KeyguardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.IncomingCallHandler
+import com.example.callnotificationscreen.utils.NOTIFICATION_ID
 import com.example.callnotificationscreen.utils.turnScreenOnAndKeyguardOff
 
 
@@ -22,15 +24,17 @@ class IncomingCallActivity : AppCompatActivity() {
         IncomingCallHandler.addDismissPressListener(::dismissActionListener)
         setContentView(R.layout.activity_incoming_call)
 
-        val notificationParsedData = IncomingCallHandler.getNotificationParsedData()
+
+        val notificationId = intent.getIntExtra(NOTIFICATION_ID, 0)
+        val notificationParsedData = IncomingCallHandler.getNotificationParsedData(notificationId)
         findViewById<TextView>(R.id.title).text = notificationParsedData?.name
         findViewById<ImageView>(R.id.avatar_large).setImageBitmap(notificationParsedData?.bitmapAvatar)
 
         findViewById<Button>(R.id.decline_button).setOnClickListener {
-            IncomingCallHandler.notifyDismissWasPressed(context = this)
+            IncomingCallHandler.notifyDismissWasPressed(notificationId = notificationId)
         }
         findViewById<Button>(R.id.accept_button).setOnClickListener {
-            val acceptIntent = Intent(this, ConversationActivity::class.java)
+            val acceptIntent = ConversationActivity.createNewIntent(this, notificationId)
             startActivity(acceptIntent)
         }
     }
@@ -67,5 +71,14 @@ class IncomingCallActivity : AppCompatActivity() {
             applicationContext.getSystemService(KEYGUARD_SERVICE) as KeyguardManager
         val keyguardLock = keyguardManager.newKeyguardLock("TAG")
         keyguardLock.disableKeyguard()
+    }
+
+
+    companion object {
+        fun createNewIntent(context: Context, notificationId: Int?): Intent {
+            val incomingCallIntent = Intent(context, IncomingCallActivity::class.java)
+            incomingCallIntent.putExtra(NOTIFICATION_ID, notificationId)
+            return incomingCallIntent
+        }
     }
 }

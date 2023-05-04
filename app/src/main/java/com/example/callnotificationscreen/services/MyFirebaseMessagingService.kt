@@ -16,6 +16,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val title: String? = data["title"]
         val avatarUrl: String? = data["avatarUrl"]
         if (title != null) {
+            Log.d("XXXX", remoteMessage.messageId.hashCode().toString())
             IncomingCallHandler.sendNotification(
                 this,
                 NotificationData(

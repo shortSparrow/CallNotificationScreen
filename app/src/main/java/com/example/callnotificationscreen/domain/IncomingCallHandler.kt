@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.callnotificationscreen.CallNotificationApp
@@ -19,10 +20,7 @@ import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.presentation.ConversationActivity
 import com.example.callnotificationscreen.presentation.DismissDummyActivity
 import com.example.callnotificationscreen.presentation.IncomingCallActivity
-import com.example.callnotificationscreen.utils.ACCEPT_INCOMING_CALL_REQUEST_CODE
 import com.example.callnotificationscreen.utils.CHANNEL_ID
-import com.example.callnotificationscreen.utils.DISMISS_INCOMING_CALL_REQUEST_CODE
-import com.example.callnotificationscreen.utils.GO_TO_CALL_SCREEN_REQUEST_CODE
 import com.example.callnotificationscreen.utils.getBitmapFromVectorDrawable
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -42,12 +40,30 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
     private val soundUri =
         Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${CallNotificationApp.getContext().packageName}/${R.raw.reminder_sound}")
     private val scope = CoroutineScope(Dispatchers.IO)
-    private var notificationParsedData: NotificationData? = null
+    private var notificationQue = mutableListOf<NotificationData>()
 
+    fun getNotificationParsedData(id: Int): NotificationData? {
+        return notificationQue.find { it.notificationId == id }
+    }
 
-    fun getNotificationParsedData() = notificationParsedData
+    private fun removeNotificationFromQue(id: Int) {
+        notificationQue.filter { it.notificationId != id }
+    }
+
+    fun cancelNotification(notificationId: Int?) {
+        val notificationManager =
+            CallNotificationApp.getContext()
+                .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        Log.d("XXXX", "notificationId IncomingCallDismissPressListener: ${notificationId}")
+        notificationId?.let {
+            notificationManager.cancel(notificationId)
+            removeNotificationFromQue(notificationId)
+        }
+
+    }
 
     fun sendNotification(context: Context, notificationData: NotificationData) {
+        Log.d("XXXX", "1: ${notificationData.notificationId}")
         scope.launch {
             val bitmapAvatar = try {
                 Picasso.get()
@@ -58,27 +74,29 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
                 // Only fot xml, for png ot jpg use  BitmapFactory.decodeResource(context.resources, R.drawable.person_avatar_placeholder)
                 getBitmapFromVectorDrawable(context, R.drawable.avatar)
             }
-            notificationParsedData = notificationData.copy(bitmapAvatar = bitmapAvatar)
-
+            Log.d("XXXX", "2: ${notificationData.notificationId}")
+            val notificationParsedData = notificationData.copy(bitmapAvatar = bitmapAvatar)
+            notificationQue.add(notificationParsedData)
 
             buildChannel(context)
-            val builder = makeNotificationBuilder(context)
+            val builder = makeNotificationBuilder(context, notificationParsedData.notificationId)
 
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            notificationParsedData?.notificationId?.let { notificationId ->
-                with(notificationManager) {
-                    val notification = builder.build()
-                    notification.flags = Notification.FLAG_INSISTENT // repeat sound
-                    notify(notificationId, notification)
-                }
+            with(notificationManager) {
+                val notification = builder.build()
+                notification.flags = Notification.FLAG_INSISTENT // repeat sound
+                notify(notificationParsedData.notificationId, notification)
             }
 
         }
     }
 
-    private fun makeNotificationBuilder(context: Context): NotificationCompat.Builder {
+    private fun makeNotificationBuilder(
+        context: Context,
+        notificationId: Int
+    ): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.arrow_up_float)
             .setPriority(NotificationCompat.PRIORITY_MAX) // must be at least HIGH
@@ -87,39 +105,43 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // not sure that is needed
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .apply {
-                inflateCustomNotification(context, this)
+                Log.d("XXXX", "3: ${notificationId}")
+                inflateCustomNotification(context, this, notificationId)
             }
     }
 
     // TODO probably remove FLAG_UPDATE_CURRENT and make all FLAG_IMMUTABLE
-    private fun inflateCustomNotification(context: Context, builder: NotificationCompat.Builder) {
-        val callScreenIntent = Intent(context, IncomingCallActivity::class.java)
+    private fun inflateCustomNotification(
+        context: Context,
+        builder: NotificationCompat.Builder,
+        notificationId: Int
+    ) {
+        Log.d("XXXX", "4: ${notificationId}")
+        val callScreenIntent = IncomingCallActivity.createNewIntent(context, notificationId)
         val callScreenIntentPendingIntent = PendingIntent.getActivity(
             context,
-            GO_TO_CALL_SCREEN_REQUEST_CODE,
+            notificationId,  // Here I user id as requestCode because with requestCode as constant I had unexpected behavior with multiple notifications
             callScreenIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE
         )
 
-        val dismissIntent = Intent(context, DismissDummyActivity::class.java)
-        // add these flags to open activity in new task
-        // the same you can do just add taskAffinity in AndroidManifest
+        val dismissIntent = DismissDummyActivity.createNewIntent(context, notificationId)
+        // add these flags to open activity in new task, the same you can do just add taskAffinity in AndroidManifest
         // this allow us to close new task and don't affect mainActivity
         dismissIntent.addFlags(FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-
         val dismissPendingIntent = PendingIntent.getActivity(
             context,
-            DISMISS_INCOMING_CALL_REQUEST_CODE,
+            notificationId, // Here I user id as requestCode because with requestCode as constant I had unexpected behavior with multiple notifications
             dismissIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+            PendingIntent.FLAG_IMMUTABLE
         )
 
-        val acceptIntent = Intent(context, ConversationActivity::class.java)
+        val acceptIntent = ConversationActivity.createNewIntent(context, notificationId)
         val acceptPendingIntent = PendingIntent.getActivity(
             context,
-            ACCEPT_INCOMING_CALL_REQUEST_CODE,
+            notificationId,  // Here I user id as requestCode because with requestCode as constant I had unexpected behavior with multiple notifications
             acceptIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val remoteViewBigContent =
@@ -130,12 +152,19 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
                 R.layout.custom_notification_compact
             )
 
+        val currentNotificationParsedData = getNotificationParsedData(notificationId)
         remoteViewBigContent.setOnClickPendingIntent(R.id.accept_button, acceptPendingIntent)
         remoteViewBigContent.setOnClickPendingIntent(R.id.decline_button, dismissPendingIntent)
-        remoteViewBigContent.setImageViewBitmap(R.id.avatar, notificationParsedData?.bitmapAvatar)
-        remoteViewBigContent.setTextViewText(R.id.person_name, notificationParsedData?.name)
-        remoteViewCompact.setTextViewText(R.id.person_name, notificationParsedData?.name)
-        remoteViewCompact.setImageViewBitmap(R.id.avatar, notificationParsedData?.bitmapAvatar)
+        remoteViewBigContent.setImageViewBitmap(
+            R.id.avatar,
+            currentNotificationParsedData?.bitmapAvatar
+        )
+        remoteViewBigContent.setTextViewText(R.id.person_name, currentNotificationParsedData?.name)
+        remoteViewCompact.setTextViewText(R.id.person_name, currentNotificationParsedData?.name)
+        remoteViewCompact.setImageViewBitmap(
+            R.id.avatar,
+            currentNotificationParsedData?.bitmapAvatar
+        )
 
         builder.setCustomContentView(remoteViewCompact)
         builder.setCustomBigContentView(remoteViewBigContent)
