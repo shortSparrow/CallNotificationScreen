@@ -2,6 +2,7 @@ package com.example.callnotificationscreen.domain
 
 import android.app.NotificationManager
 import android.content.Context
+import android.util.Log
 
 // handle behavior after pressing dismiss button in notification/activity (not handle click itself!)
 open class IncomingCallDismissPressListener {
@@ -11,6 +12,7 @@ open class IncomingCallDismissPressListener {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationId = IncomingCallHandler.getNotificationParsedData()?.notificationId
+        Log.d("XXXX", "notificationId IncomingCallDismissPressListener: ${notificationId}")
         notificationId?.let {
             notificationManager.cancel(notificationId)
         }

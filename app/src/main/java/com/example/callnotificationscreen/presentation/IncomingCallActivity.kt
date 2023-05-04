@@ -1,6 +1,7 @@
 package com.example.callnotificationscreen.presentation
 
 import android.app.KeyguardManager
+import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
 import android.view.WindowManager
@@ -27,6 +28,10 @@ class IncomingCallActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.decline_button).setOnClickListener {
             IncomingCallHandler.notifyDismissWasPressed(context = this)
+        }
+        findViewById<Button>(R.id.accept_button).setOnClickListener {
+            val acceptIntent = Intent(this, ConversationActivity::class.java)
+            startActivity(acceptIntent)
         }
     }
 

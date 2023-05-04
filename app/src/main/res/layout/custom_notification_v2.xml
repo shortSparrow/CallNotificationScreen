@@ -13,8 +13,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
-        tools:src="@drawable/ic_launcher_background"
-        android:contentDescription="@string/person_avatar" />
+        android:contentDescription="@string/person_avatar"
+        tools:src="@drawable/ic_launcher_background" />
 
     <TextView
         android:id="@+id/person_name"
@@ -23,9 +23,11 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
-        tools:text="Volkov Oleksandr"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textAlignment="center"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        tools:text="Volkov Oleksandr" />
 
     <TextView
         android:id="@+id/description"
@@ -35,6 +37,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@string/incoming_call"
         android:textAlignment="center" />
 

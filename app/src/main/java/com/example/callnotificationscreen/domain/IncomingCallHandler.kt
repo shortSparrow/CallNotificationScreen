@@ -91,6 +91,7 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
             }
     }
 
+    // TODO probably remove FLAG_UPDATE_CURRENT and make all FLAG_IMMUTABLE
     private fun inflateCustomNotification(context: Context, builder: NotificationCompat.Builder) {
         val callScreenIntent = Intent(context, IncomingCallActivity::class.java)
         val callScreenIntentPendingIntent = PendingIntent.getActivity(

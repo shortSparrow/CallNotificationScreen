@@ -23,6 +23,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -36,6 +38,8 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
         android:layout_toEndOf="@+id/avatar"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="@string/incoming_call"
         android:textAlignment="center"
         android:textSize="15sp" />
