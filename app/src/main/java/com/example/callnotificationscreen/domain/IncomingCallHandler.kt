@@ -9,12 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import com.example.callnotificationscreen.CallNotificationApp
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.presentation.ConversationActivity
 import com.example.callnotificationscreen.presentation.DismissDummyActivity
@@ -23,33 +23,43 @@ import com.example.callnotificationscreen.utils.ACCEPT_INCOMING_CALL_REQUEST_COD
 import com.example.callnotificationscreen.utils.CHANNEL_ID
 import com.example.callnotificationscreen.utils.DISMISS_INCOMING_CALL_REQUEST_CODE
 import com.example.callnotificationscreen.utils.GO_TO_CALL_SCREEN_REQUEST_CODE
-import com.example.callnotificationscreen.utils.NOTIFICATION_ID
+import com.example.callnotificationscreen.utils.getBitmapFromVectorDrawable
 import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
-val DEFAULT_NOTIFICATION_ID = Random.nextInt(0, 1000)
+
+data class NotificationData(
+    val avatarUrl: String? = null,
+    val bitmapAvatar: Bitmap? = null,
+    val name: String,
+    val notificationId: Int
+)
 
 // TODO add ability handle multiple incoming calls
-object NotificationHandler : NotificationClickListener() {
-    private var notificationId: Int = DEFAULT_NOTIFICATION_ID
-    private val soundUri = // TODO there add also dynamic packageID
-        Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://com.example.callnotificationscreen/${R.raw.reminder_sound}")
-    private var bitmapAvatar: Bitmap? = null
-    private val scope = MainScope()
+object IncomingCallHandler : IncomingCallDismissPressListener() {
+    private val soundUri =
+        Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${CallNotificationApp.getContext().packageName}/${R.raw.reminder_sound}")
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private var notificationParsedData: NotificationData? = null
 
-    fun sendNotification(context: Context) {
+
+    fun getNotificationParsedData() = notificationParsedData
+
+    fun sendNotification(context: Context, notificationData: NotificationData) {
         scope.launch {
-            // TODO add handler on no internet connection
-            val request =
-                async { loadAvatar("https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg") }
-            val avatarIcon = request.await()
-            bitmapAvatar = avatarIcon
-            // TODO add real notification Id
-            notificationId = System.currentTimeMillis().toInt()
+            val bitmapAvatar = try {
+                Picasso.get()
+                    .load(notificationData.avatarUrl)
+                    .get()
+            } catch (e: Exception) {
+                // when no internet or something went wrong
+                // Only fot xml, for png ot jpg use  BitmapFactory.decodeResource(context.resources, R.drawable.person_avatar_placeholder)
+                getBitmapFromVectorDrawable(context, R.drawable.avatar)
+            }
+            notificationParsedData = notificationData.copy(bitmapAvatar = bitmapAvatar)
+
 
             buildChannel(context)
             val builder = makeNotificationBuilder(context)
@@ -57,43 +67,15 @@ object NotificationHandler : NotificationClickListener() {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-            with(notificationManager) {
-                val notification = builder.build()
-                notification.flags = Notification.FLAG_INSISTENT // repeat sound
-                notify(
-                    notificationId,
-                    notification
-                ) // use System.currentTimeMillis().toInt() because id should be uniq
+            notificationParsedData?.notificationId?.let { notificationId ->
+                with(notificationManager) {
+                    val notification = builder.build()
+                    notification.flags = Notification.FLAG_INSISTENT // repeat sound
+                    notify(notificationId, notification)
+                }
             }
+
         }
-    }
-
-    private fun loadAvatar(url: String): Bitmap? {
-        var res: Bitmap? = null
-        var isLoadingComplete = false
-
-        while (!isLoadingComplete) {
-            Picasso.get()
-                .load(url)
-                .resize(
-                    200,
-                    200
-                ) // must set because for large file (4 mb) not call success or failure
-                .into(object : Target {
-                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                        res = bitmap
-                        isLoadingComplete = true
-                    }
-
-                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                        isLoadingComplete = true
-                    }
-
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-                })
-        }
-
-        return res
     }
 
     private fun makeNotificationBuilder(context: Context): NotificationCompat.Builder {
@@ -119,7 +101,6 @@ object NotificationHandler : NotificationClickListener() {
         )
 
         val dismissIntent = Intent(context, DismissDummyActivity::class.java)
-        dismissIntent.putExtra(NOTIFICATION_ID, notificationId)
         // add these flags to open activity in new task
         // the same you can do just add taskAffinity in AndroidManifest
         // this allow us to close new task and don't affect mainActivity
@@ -133,7 +114,6 @@ object NotificationHandler : NotificationClickListener() {
         )
 
         val acceptIntent = Intent(context, ConversationActivity::class.java)
-        acceptIntent.putExtra(NOTIFICATION_ID, notificationId)
         val acceptPendingIntent = PendingIntent.getActivity(
             context,
             ACCEPT_INCOMING_CALL_REQUEST_CODE,
@@ -141,21 +121,24 @@ object NotificationHandler : NotificationClickListener() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val remoteView =
+        val remoteViewBigContent =
             RemoteViews(context.applicationContext.packageName, R.layout.custom_notification_v3)
         val remoteViewCompact =
-            RemoteViews(context.applicationContext.packageName, R.layout.custom_notification_compact)
+            RemoteViews(
+                context.applicationContext.packageName,
+                R.layout.custom_notification_compact
+            )
 
-        remoteView.setOnClickPendingIntent(R.id.accept_button, acceptPendingIntent)
-        remoteView.setOnClickPendingIntent(R.id.decline_button, dismissPendingIntent)
-        remoteView.setImageViewBitmap(R.id.avatar, bitmapAvatar)
-        remoteView.setTextViewText(R.id.person_name, "Lubov")
-        remoteViewCompact.setTextViewText(R.id.person_name, "Lubov")
-        remoteViewCompact.setImageViewBitmap(R.id.avatar, bitmapAvatar)
+        remoteViewBigContent.setOnClickPendingIntent(R.id.accept_button, acceptPendingIntent)
+        remoteViewBigContent.setOnClickPendingIntent(R.id.decline_button, dismissPendingIntent)
+        remoteViewBigContent.setImageViewBitmap(R.id.avatar, notificationParsedData?.bitmapAvatar)
+        remoteViewBigContent.setTextViewText(R.id.person_name, notificationParsedData?.name)
+        remoteViewCompact.setTextViewText(R.id.person_name, notificationParsedData?.name)
+        remoteViewCompact.setImageViewBitmap(R.id.avatar, notificationParsedData?.bitmapAvatar)
 
         builder.setCustomContentView(remoteViewCompact)
-        builder.setCustomBigContentView(remoteView)
-        builder.setCustomHeadsUpContentView(remoteView)
+        builder.setCustomBigContentView(remoteViewBigContent)
+        builder.setCustomHeadsUpContentView(remoteViewBigContent)
 
         builder.setContentIntent(callScreenIntentPendingIntent)
         builder.setFullScreenIntent(callScreenIntentPendingIntent, true)

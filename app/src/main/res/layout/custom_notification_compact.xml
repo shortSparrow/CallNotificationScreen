@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="30dp"
         android:contentDescription="@string/person_avatar"
-        tools:src="@drawable/ic_launcher_background" />
+        tools:src="@drawable/avatar" />
 
     <TextView
         android:id="@+id/person_name"

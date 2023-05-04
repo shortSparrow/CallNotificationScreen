@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.INTERNET" /> <!-- for loading image to notification -->
 
     <application
+        android:name=".CallNotificationApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -41,6 +42,10 @@
             android:name=".domain.NotificationReceiver"
             android:enabled="true" />
 
+        <!--
+            noHistory need because when we navigate from this screen to ConversationActivity and then go back
+            we will no go to IncomingCallActivity, but to MainActivity.
+        -->
         <activity
             android:name=".presentation.IncomingCallActivity"
             android:exported="false"

@@ -1,57 +1,46 @@
 package com.example.callnotificationscreen.presentation
 
-import android.app.Activity
 import android.app.KeyguardManager
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
-import android.util.Log
 import android.view.WindowManager
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.R
-import com.example.callnotificationscreen.domain.NotificationHandler
+import com.example.callnotificationscreen.domain.IncomingCallHandler
+import com.example.callnotificationscreen.utils.turnScreenOnAndKeyguardOff
 
-fun Activity.turnScreenOnAndKeyguardOff() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-        setShowWhenLocked(true)
-    } else {
-        window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-        )
-    }
-
-    with(getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            requestDismissKeyguard(this@turnScreenOnAndKeyguardOff, null)
-        }
-    }
-}
 
 class IncomingCallActivity : AppCompatActivity() {
-    private fun dismissActionListener() {
-        Log.d("XXX", "Canceled IncomingCallActivity")
-        finish()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         turnScreenOnAndKeyguardOff()
-//        unlockScreen()
-
+        IncomingCallHandler.addDismissPressListener(::dismissActionListener)
         setContentView(R.layout.activity_incoming_call)
-        Log.d("XXX", "IncomingCallActivity onCreate")
-        NotificationHandler.setDismissPressListener(::dismissActionListener)
+
+        val notificationParsedData = IncomingCallHandler.getNotificationParsedData()
+        findViewById<TextView>(R.id.title).text = notificationParsedData?.name
+        findViewById<ImageView>(R.id.avatar_large).setImageBitmap(notificationParsedData?.bitmapAvatar)
+
+        findViewById<Button>(R.id.decline_button).setOnClickListener {
+            IncomingCallHandler.notifyDismissWasPressed(context = this)
+        }
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
-        NotificationHandler.removeDismissPressListener(::dismissActionListener)
+        IncomingCallHandler.removeDismissPressListener(::dismissActionListener)
     }
 
+    private fun dismissActionListener() {
+        finish()
+    }
+
+    // was change by turnScreenOnAndKeyguardOff
     private fun unlockScreen() {
         val window = window
         window.addFlags(
