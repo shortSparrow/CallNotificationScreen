@@ -54,7 +54,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
         val notificationManager =
             CallNotificationApp.getContext()
                 .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        Log.d("XXXX", "notificationId IncomingCallDismissPressListener: ${notificationId}")
         notificationId?.let {
             notificationManager.cancel(notificationId)
             removeNotificationFromQue(notificationId)
@@ -63,7 +62,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
     }
 
     fun sendNotification(context: Context, notificationData: NotificationData) {
-        Log.d("XXXX", "1: ${notificationData.notificationId}")
         scope.launch {
             val bitmapAvatar = try {
                 Picasso.get()
@@ -74,7 +72,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
                 // Only fot xml, for png ot jpg use  BitmapFactory.decodeResource(context.resources, R.drawable.person_avatar_placeholder)
                 getBitmapFromVectorDrawable(context, R.drawable.avatar)
             }
-            Log.d("XXXX", "2: ${notificationData.notificationId}")
             val notificationParsedData = notificationData.copy(bitmapAvatar = bitmapAvatar)
             notificationQue.add(notificationParsedData)
 
@@ -105,7 +102,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // not sure that is needed
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .apply {
-                Log.d("XXXX", "3: ${notificationId}")
                 inflateCustomNotification(context, this, notificationId)
             }
     }
@@ -116,7 +112,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
         builder: NotificationCompat.Builder,
         notificationId: Int
     ) {
-        Log.d("XXXX", "4: ${notificationId}")
         val callScreenIntent = IncomingCallActivity.createNewIntent(context, notificationId)
         val callScreenIntentPendingIntent = PendingIntent.getActivity(
             context,

@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.callnotificationscreen.CallNotificationApp.Companion.TAG
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.NotificationReceiver
 import com.example.callnotificationscreen.utils.SCHEDULE_TIME
 import com.example.callnotificationscreen.utils.XiomiHelper
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import xyz.kumaraswamy.autostart.Autostart
 import java.util.concurrent.TimeUnit
 
 
@@ -25,20 +27,31 @@ class MainActivity : AppCompatActivity() {
             makeScheduleNotification()
         }
 
-        // need for show incomingCall activity on lock screen for xiomi
         val xiomiHelper = XiomiHelper(this)
-        if (xiomiHelper.isXiaomi() && xiomiHelper.isShowOnLockScreenPermissionEnable() != true) {
-            xiomiHelper.navigateToLockScreenPermission()
+        if (xiomiHelper.isXiaomi()) {
+            if (xiomiHelper.isShowOnLockScreenPermissionEnable() != true) {
+                // need for show incomingCall activity on lock screen for xiomi
+                xiomiHelper.navigateToLockScreenPermission()
+            }
+
+            // need for ability get fcm push anytime
+            val autostart = Autostart(applicationContext)
+            val state: Autostart.State = autostart.autoStartState
+            if (state === Autostart.State.DISABLED) {
+                xiomiHelper.showAutostartPermissionDialog()
+            }
         }
+
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w("XXXX", "Fetching FCM registration token failed", task.exception)
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
             }
 
-            Log.d("XXXX", task.result)
+            Log.d(TAG, task.result)
         })
+
     }
 
     private fun makeScheduleNotification() {

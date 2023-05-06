@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /> <!-- without this will not open Call Activity -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- for loading image to notification -->
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" /> <!-- for showing fullscreen intent for some android version -->
 
     <application
         android:name=".CallNotificationApp"
@@ -20,6 +20,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CallNotificationScreen"
         tools:targetApi="31">
+<!--    For Xiaomi alternative way of autostart (But autostart is better, because this way is detracted, and change by Google to FirebaseMessagingService    -->
+<!--        <receiver-->
+<!--            android:name=".services.GcmBroadcastReceiver"-->
+<!--            android:exported="true"-->
+<!--            android:permission="com.google.android.c2dm.permission.SEND">-->
+<!--            <intent-filter>-->
+<!--                &lt;!&ndash; Receives the actual messages. &ndash;&gt;-->
+<!--                <action android:name="com.google.android.c2dm.intent.RECEIVE" />-->
+<!--                <category android:name="com.google.android.gcm.demo.app" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
         <service
             android:name=".services.MyFirebaseMessagingService"
             android:directBootAware="true"
@@ -55,7 +66,7 @@
 
         <!--
             noHistory need because when we navigate from this screen to ConversationActivity and then go back
-            we will no go to IncomingCallActivity, but to MainActivity.
+            we will not go to IncomingCallActivity, but to MainActivity.
         -->
         <activity
             android:name=".presentation.IncomingCallActivity"

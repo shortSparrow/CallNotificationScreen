@@ -1,7 +1,7 @@
 package com.example.callnotificationscreen.services
 
-import android.R.attr.data
 import android.util.Log
+import com.example.callnotificationscreen.CallNotificationApp.Companion.TAG
 import com.example.callnotificationscreen.domain.IncomingCallHandler
 import com.example.callnotificationscreen.domain.NotificationData
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -16,7 +16,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val title: String? = data["title"]
         val avatarUrl: String? = data["avatarUrl"]
         if (title != null) {
-            Log.d("XXXX", remoteMessage.messageId.hashCode().toString())
+            Log.d(TAG, remoteMessage.messageId.hashCode().toString())
             IncomingCallHandler.sendNotification(
                 this,
                 NotificationData(

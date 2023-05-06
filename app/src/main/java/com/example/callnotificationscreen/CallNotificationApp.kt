@@ -16,5 +16,7 @@ class CallNotificationApp : Application() {
         fun getContext(): Context {
             return instance!!
         }
+
+        const val TAG = "CallNotificationApp"
     }
 }
