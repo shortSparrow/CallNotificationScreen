@@ -12,7 +12,6 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import com.example.callnotificationscreen.CallNotificationApp
@@ -20,6 +19,7 @@ import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.presentation.ConversationActivity
 import com.example.callnotificationscreen.presentation.DismissDummyActivity
 import com.example.callnotificationscreen.presentation.IncomingCallActivity
+import com.example.callnotificationscreen.services.NotificationDismissedReceiver
 import com.example.callnotificationscreen.utils.CHANNEL_ID
 import com.example.callnotificationscreen.utils.getBitmapFromVectorDrawable
 import com.squareup.picasso.Picasso
@@ -35,7 +35,7 @@ data class NotificationData(
     val notificationId: Int
 )
 
-// TODO add ability handle multiple incoming calls
+
 object IncomingCallHandler : IncomingCallDismissPressListener() {
     private val soundUri =
         Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${CallNotificationApp.getContext().packageName}/${R.raw.reminder_sound}")
@@ -47,7 +47,7 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
     }
 
     private fun removeNotificationFromQue(id: Int) {
-        notificationQue.filter { it.notificationId != id }
+        notificationQue.removeIf { it.notificationId == id }
     }
 
     fun cancelNotification(notificationId: Int?) {
@@ -106,7 +106,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
             }
     }
 
-    // TODO probably remove FLAG_UPDATE_CURRENT and make all FLAG_IMMUTABLE
     private fun inflateCustomNotification(
         context: Context,
         builder: NotificationCompat.Builder,
@@ -131,6 +130,15 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
+
+        val deleteIntent = NotificationDismissedReceiver.createNewIntent(context, notificationId)
+        val deletePendingIntent = PendingIntent.getBroadcast(
+            context,
+            notificationId, // Here I user id as requestCode because with requestCode as constant I had unexpected behavior with multiple notifications
+            deleteIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         val acceptIntent = ConversationActivity.createNewIntent(context, notificationId)
         val acceptPendingIntent = PendingIntent.getActivity(
             context,
@@ -140,7 +148,7 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
         )
 
         val remoteViewBigContent =
-            RemoteViews(context.applicationContext.packageName, R.layout.custom_notification_v3)
+            RemoteViews(context.applicationContext.packageName, R.layout.custom_notification)
         val remoteViewCompact =
             RemoteViews(
                 context.applicationContext.packageName,
@@ -164,6 +172,7 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
         builder.setCustomContentView(remoteViewCompact)
         builder.setCustomBigContentView(remoteViewBigContent)
         builder.setCustomHeadsUpContentView(remoteViewBigContent)
+        builder.setDeleteIntent(deletePendingIntent) // on hide from notification panel
 
         builder.setContentIntent(callScreenIntentPendingIntent)
         builder.setFullScreenIntent(callScreenIntentPendingIntent, true)
@@ -189,7 +198,6 @@ object IncomingCallHandler : IncomingCallDismissPressListener() {
             channel.enableVibration(true)
             channel.setSound(soundUri, attributes)
             channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC // not sure that is needed
-            channel.importance = NotificationManager.IMPORTANCE_HIGH
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)

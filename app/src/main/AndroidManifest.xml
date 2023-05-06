@@ -20,17 +20,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CallNotificationScreen"
         tools:targetApi="31">
-<!--    For Xiaomi alternative way of autostart (But autostart is better, because this way is detracted, and change by Google to FirebaseMessagingService    -->
-<!--        <receiver-->
-<!--            android:name=".services.GcmBroadcastReceiver"-->
-<!--            android:exported="true"-->
-<!--            android:permission="com.google.android.c2dm.permission.SEND">-->
-<!--            <intent-filter>-->
-<!--                &lt;!&ndash; Receives the actual messages. &ndash;&gt;-->
-<!--                <action android:name="com.google.android.c2dm.intent.RECEIVE" />-->
-<!--                <category android:name="com.google.android.gcm.demo.app" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+        <!--    For Xiaomi alternative way of autostart (But autostart is better, because this way is detracted, and change by Google to FirebaseMessagingService    -->
+        <!--        <receiver-->
+        <!--            android:name=".services.GcmBroadcastReceiver"-->
+        <!--            android:exported="true"-->
+        <!--            android:permission="com.google.android.c2dm.permission.SEND">-->
+        <!--            <intent-filter>-->
+        <!--                &lt;!&ndash; Receives the actual messages. &ndash;&gt;-->
+        <!--                <action android:name="com.google.android.c2dm.intent.RECEIVE" />-->
+        <!--                <category android:name="com.google.android.gcm.demo.app" />-->
+        <!--            </intent-filter>-->
+        <!--        </receiver>-->
         <service
             android:name=".services.MyFirebaseMessagingService"
             android:directBootAware="true"
@@ -40,6 +40,9 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".services.NotificationDismissedReceiver"
+            android:exported="false" />
         <receiver
             android:name=".domain.NotificationReceiver"
             android:enabled="true" />

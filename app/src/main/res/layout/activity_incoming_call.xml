@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:contentDescription="avatar"
+        android:contentDescription="@string/person_avatar"
         app:layout_constraintBottom_toTopOf="@+id/accept_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,11 +39,12 @@
 
     <Button
         android:id="@+id/accept_button"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
         android:backgroundTint="@color/green"
-        android:text="Accept"
+        android:maxWidth="180dp"
+        android:text="@string/accept"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/decline_button"
@@ -53,11 +54,12 @@
 
     <Button
         android:id="@+id/decline_button"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
         android:backgroundTint="@color/red"
-        android:text="Decline"
+        android:maxWidth="180dp"
+        android:text="@string/decline"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
