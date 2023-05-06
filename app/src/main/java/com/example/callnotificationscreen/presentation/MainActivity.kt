@@ -4,12 +4,15 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.NotificationReceiver
 import com.example.callnotificationscreen.utils.SCHEDULE_TIME
 import com.example.callnotificationscreen.utils.XiomiHelper
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import java.util.concurrent.TimeUnit
 
 
@@ -27,6 +30,15 @@ class MainActivity : AppCompatActivity() {
         if (xiomiHelper.isXiaomi() && xiomiHelper.isShowOnLockScreenPermissionEnable() != true) {
             xiomiHelper.navigateToLockScreenPermission()
         }
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("XXXX", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            Log.d("XXXX", task.result)
+        })
     }
 
     private fun makeScheduleNotification() {

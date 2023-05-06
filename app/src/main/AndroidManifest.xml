@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" /> <!-- without this will not open Call Activity -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- for loading image to notification -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
         android:name=".CallNotificationApp"
@@ -19,9 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CallNotificationScreen"
         tools:targetApi="31">
-        <activity
-            android:name=".presentation.ConversationActivity"
-            android:exported="false" />
+        <service
+            android:name=".services.MyFirebaseMessagingService"
+            android:directBootAware="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".domain.NotificationReceiver"
+            android:enabled="true" />
 
         <!--
             taskAffinity need for opening activity in different task (work fine without it (because we add FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK flags),
@@ -38,9 +48,10 @@
             android:taskAffinity="com.dismiss_dummy.activity"
             android:theme="@style/Theme.Transparent" />
 
-        <receiver
-            android:name=".domain.NotificationReceiver"
-            android:enabled="true" />
+
+        <activity
+            android:name=".presentation.ConversationActivity"
+            android:exported="false" />
 
         <!--
             noHistory need because when we navigate from this screen to ConversationActivity and then go back
@@ -48,6 +59,7 @@
         -->
         <activity
             android:name=".presentation.IncomingCallActivity"
+            android:excludeFromRecents="true"
             android:exported="false"
             android:noHistory="true" />
 
