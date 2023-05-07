@@ -53,8 +53,6 @@ class XiomiHelper(val context: Context) {
             .setNegativeButton("No", null)
             .show()
             .setCancelable(true)
-
-
     }
 
     private fun navigateToAutoStart() {

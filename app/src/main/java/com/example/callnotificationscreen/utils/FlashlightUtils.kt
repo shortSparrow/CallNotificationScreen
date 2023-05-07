@@ -6,6 +6,7 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.util.Log
 import com.example.callnotificationscreen.CallNotificationApp
+import com.example.callnotificationscreen.CallNotificationApp.Companion.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,8 +16,11 @@ object FlashlightUtils {
     private val scope = CoroutineScope(Dispatchers.Default)
     private var isFlashlightBlinking = false
 
-    // crash on emulator
+
     fun flashlightStart() {
+        // crash on emulator so prevent toggleFlashlight
+        if (isProbablyRunningOnEmulator) return
+
         val context = CallNotificationApp.getContext()
         if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
             isFlashlightBlinking = true
@@ -32,6 +36,9 @@ object FlashlightUtils {
     }
 
     fun flashlightStop() {
+        // crash on emulator so prevent toggleFlashlight
+        if (isProbablyRunningOnEmulator) return
+
         isFlashlightBlinking = false
         toggleFlashlight(false)
     }
@@ -43,7 +50,7 @@ object FlashlightUtils {
         try {
             cameraManager.setTorchMode(cameraId, status)
         } catch (e: CameraAccessException) {
-            Log.e(CallNotificationApp.TAG, e.message.toString())
+            Log.e(TAG, e.message.toString())
         }
     }
 }

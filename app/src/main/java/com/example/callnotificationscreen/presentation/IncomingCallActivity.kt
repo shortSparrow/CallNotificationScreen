@@ -1,17 +1,12 @@
 package com.example.callnotificationscreen.presentation
 
-import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PowerManager
-import android.util.Log
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.callnotificationscreen.CallNotificationApp.Companion.TAG
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.IncomingCallHandler
 import com.example.callnotificationscreen.utils.FlashlightUtils
@@ -38,6 +33,7 @@ class IncomingCallActivity : AppCompatActivity() {
         findViewById<Button>(R.id.accept_button).setOnClickListener {
             val acceptIntent = ConversationActivity.createNewIntent(this, notificationId)
             startActivity(acceptIntent)
+            finish() // needed because on wakelock onDestroy may not work, so do it manually
         }
     }
 
@@ -46,38 +42,11 @@ class IncomingCallActivity : AppCompatActivity() {
         super.onDestroy()
         IncomingCallHandler.removeCallDismissListener(::dismissActionListener)
         FlashlightUtils.flashlightStop()
-        Log.d(TAG, "onDestroy IncomingCallActivity")
     }
 
     private fun dismissActionListener() {
         finish()
     }
-
-    // TODO maybe delete
-    // was change by turnScreenOnAndKeyguardOff
-    private fun unlockScreen() {
-        val window = window
-        window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-        )
-
-        // to wake up the screen
-        val pm = applicationContext.getSystemService(POWER_SERVICE) as PowerManager
-        val wakeLock = pm.newWakeLock(
-            (PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP),
-            "myapp:useless_tag"
-        )
-        wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/)
-
-        // to release the screen lock
-        val keyguardManager =
-            applicationContext.getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-        val keyguardLock = keyguardManager.newKeyguardLock("TAG")
-        keyguardLock.disableKeyguard()
-    }
-
 
     companion object {
         fun createNewIntent(context: Context, notificationId: Int?): Intent {

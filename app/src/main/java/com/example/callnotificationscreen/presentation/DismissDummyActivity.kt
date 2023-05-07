@@ -9,7 +9,7 @@ import com.example.callnotificationscreen.utils.NOTIFICATION_ID
 
 // Needed only for collapsing android notification panel
 // context.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) work only for Android 11 and below
-// so create empty activity, this close notification panel and then we finish one
+// so let's create an empty activity, and this will close notification panel and then we will finish one
 class DismissDummyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

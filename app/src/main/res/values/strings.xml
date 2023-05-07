@@ -5,4 +5,6 @@
     <string name="person_avatar">avatar</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="end_call">End call</string>
+    <string name="conversation">CONVERSATION</string>
 </resources>

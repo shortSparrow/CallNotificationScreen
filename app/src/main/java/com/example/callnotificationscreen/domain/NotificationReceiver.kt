@@ -3,7 +3,6 @@ package com.example.callnotificationscreen.domain
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 
 
 class NotificationReceiver : BroadcastReceiver() {
@@ -13,7 +12,7 @@ class NotificationReceiver : BroadcastReceiver() {
         IncomingCallHandler.sendNotification(
             context,
             NotificationData(
-                name = "Lubov Shuliak",
+                name = "Your Friend",
                 avatarUrl = "https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg",
                 notificationId = notificationId
             )

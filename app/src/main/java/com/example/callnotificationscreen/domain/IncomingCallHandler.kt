@@ -42,7 +42,7 @@ object IncomingCallHandler : IncomingCallDismissListener() {
         Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${CallNotificationApp.getContext().packageName}/${R.raw.reminder_sound}")
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    // Тримати тут дані погана ідея, бо вони видалються після закриття activity
+    // FIXME store data here is a bad idea, because tey will be deleted on destroy activity (for real usage better use intent.putExtra)
     private var notificationQue = mutableListOf<NotificationData>()
 
     fun getNotificationParsedData(id: Int): NotificationData? {
@@ -205,6 +205,5 @@ object IncomingCallHandler : IncomingCallDismissListener() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
 
 }
