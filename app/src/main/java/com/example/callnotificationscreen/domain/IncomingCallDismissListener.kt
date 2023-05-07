@@ -1,21 +1,22 @@
 package com.example.callnotificationscreen.domain
 
 // handle behavior after pressing dismiss button in notification/activity (not handle click itself!)
-open class IncomingCallDismissPressListener {
+open class IncomingCallDismissListener {
     private val dismissListener = mutableListOf<() -> Unit>()
 
-    fun notifyDismissWasPressed(notificationId: Int?) {
+    fun incomingCallWasDismissed(notificationId: Int?) {
+        IncomingCallHandler.flashlightStop()
         IncomingCallHandler.cancelNotification(notificationId)
         dismissListener.forEach {
             it()
         }
     }
 
-    fun addDismissPressListener(listener: () -> Unit) {
+    fun addCallDismissListener(listener: () -> Unit) {
         dismissListener.add(listener)
     }
 
-    fun removeDismissPressListener(listener: () -> Unit) {
+    fun removeCallDismissListener(listener: () -> Unit) {
         dismissListener.removeAll { it == listener }
     }
 }

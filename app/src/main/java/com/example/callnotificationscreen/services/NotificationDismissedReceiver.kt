@@ -11,7 +11,7 @@ class NotificationDismissedReceiver: BroadcastReceiver() {
         // HERE you can implement logic on delete notification or just use the same on dismiss
         intent?.let {
             val notificationId = intent.getIntExtra(NOTIFICATION_ID, 0)
-            IncomingCallHandler.notifyDismissWasPressed(notificationId)
+            IncomingCallHandler.incomingCallWasDismissed(notificationId)
         }
 
     }

@@ -36,7 +36,7 @@ data class NotificationData(
 )
 
 
-object IncomingCallHandler : IncomingCallDismissPressListener() {
+object IncomingCallHandler : IncomingCallDismissListener() {
     private val soundUri =
         Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${CallNotificationApp.getContext().packageName}/${R.raw.reminder_sound}")
     private val scope = CoroutineScope(Dispatchers.IO)

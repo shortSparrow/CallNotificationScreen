@@ -14,7 +14,7 @@ class DismissDummyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val id = intent.getIntExtra(NOTIFICATION_ID, 0)
-        IncomingCallHandler.notifyDismissWasPressed(
+        IncomingCallHandler.incomingCallWasDismissed(
             IncomingCallHandler.getNotificationParsedData(id)?.notificationId
         )
         finish()

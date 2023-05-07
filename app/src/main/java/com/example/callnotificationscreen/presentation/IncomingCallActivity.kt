@@ -21,7 +21,7 @@ class IncomingCallActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         turnScreenOnAndKeyguardOff()
-        IncomingCallHandler.addDismissPressListener(::dismissActionListener)
+        IncomingCallHandler.addCallDismissListener(::dismissActionListener)
         setContentView(R.layout.activity_incoming_call)
 
 
@@ -31,7 +31,7 @@ class IncomingCallActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.avatar_large).setImageBitmap(notificationParsedData?.bitmapAvatar)
 
         findViewById<Button>(R.id.decline_button).setOnClickListener {
-            IncomingCallHandler.notifyDismissWasPressed(notificationId = notificationId)
+            IncomingCallHandler.incomingCallWasDismissed(notificationId = notificationId)
         }
         findViewById<Button>(R.id.accept_button).setOnClickListener {
             val acceptIntent = ConversationActivity.createNewIntent(this, notificationId)
@@ -42,7 +42,7 @@ class IncomingCallActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        IncomingCallHandler.removeDismissPressListener(::dismissActionListener)
+        IncomingCallHandler.removeCallDismissListener(::dismissActionListener)
     }
 
     private fun dismissActionListener() {
