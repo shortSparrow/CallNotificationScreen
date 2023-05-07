@@ -5,13 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
+import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.callnotificationscreen.CallNotificationApp.Companion.TAG
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.IncomingCallHandler
+import com.example.callnotificationscreen.utils.FlashlightUtils
 import com.example.callnotificationscreen.utils.NOTIFICATION_ID
 import com.example.callnotificationscreen.utils.turnScreenOnAndKeyguardOff
 
@@ -23,7 +26,6 @@ class IncomingCallActivity : AppCompatActivity() {
         turnScreenOnAndKeyguardOff()
         IncomingCallHandler.addCallDismissListener(::dismissActionListener)
         setContentView(R.layout.activity_incoming_call)
-
 
         val notificationId = intent.getIntExtra(NOTIFICATION_ID, 0)
         val notificationParsedData = IncomingCallHandler.getNotificationParsedData(notificationId)
@@ -43,12 +45,15 @@ class IncomingCallActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         IncomingCallHandler.removeCallDismissListener(::dismissActionListener)
+        FlashlightUtils.flashlightStop()
+        Log.d(TAG, "onDestroy IncomingCallActivity")
     }
 
     private fun dismissActionListener() {
         finish()
     }
 
+    // TODO maybe delete
     // was change by turnScreenOnAndKeyguardOff
     private fun unlockScreen() {
         val window = window

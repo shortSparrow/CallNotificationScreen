@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.IncomingCallHandler
+import com.example.callnotificationscreen.utils.FlashlightUtils
 import com.example.callnotificationscreen.utils.NOTIFICATION_ID
 
 class ConversationActivity : AppCompatActivity() {
@@ -15,6 +16,7 @@ class ConversationActivity : AppCompatActivity() {
 
         val notificationId = intent.getIntExtra(NOTIFICATION_ID, 0)
         IncomingCallHandler.cancelNotification(notificationId = notificationId)
+        FlashlightUtils.flashlightStop()
 
         setContentView(R.layout.activity_conversation)
     }

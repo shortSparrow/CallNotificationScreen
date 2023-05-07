@@ -21,6 +21,7 @@ import com.example.callnotificationscreen.presentation.DismissDummyActivity
 import com.example.callnotificationscreen.presentation.IncomingCallActivity
 import com.example.callnotificationscreen.services.NotificationDismissedReceiver
 import com.example.callnotificationscreen.utils.CHANNEL_ID
+import com.example.callnotificationscreen.utils.FlashlightUtils
 import com.example.callnotificationscreen.utils.getBitmapFromVectorDrawable
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -40,6 +41,8 @@ object IncomingCallHandler : IncomingCallDismissListener() {
     private val soundUri =
         Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${CallNotificationApp.getContext().packageName}/${R.raw.reminder_sound}")
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    // Тримати тут дані погана ідея, бо вони видалються після закриття activity
     private var notificationQue = mutableListOf<NotificationData>()
 
     fun getNotificationParsedData(id: Int): NotificationData? {
@@ -58,7 +61,6 @@ object IncomingCallHandler : IncomingCallDismissListener() {
             notificationManager.cancel(notificationId)
             removeNotificationFromQue(notificationId)
         }
-
     }
 
     fun sendNotification(context: Context, notificationData: NotificationData) {
@@ -85,6 +87,7 @@ object IncomingCallHandler : IncomingCallDismissListener() {
                 val notification = builder.build()
                 notification.flags = Notification.FLAG_INSISTENT // repeat sound
                 notify(notificationParsedData.notificationId, notification)
+                FlashlightUtils.flashlightStart()
             }
 
         }
@@ -179,7 +182,6 @@ object IncomingCallHandler : IncomingCallDismissListener() {
     }
 
 
-    // TODO add light flashing
     private fun buildChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Example Notification Channel"
@@ -203,4 +205,6 @@ object IncomingCallHandler : IncomingCallDismissListener() {
             notificationManager.createNotificationChannel(channel)
         }
     }
+
+
 }
