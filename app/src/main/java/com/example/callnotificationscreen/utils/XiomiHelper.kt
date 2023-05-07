@@ -12,6 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import java.lang.reflect.Method
 
 class XiomiHelper(val context: Context) {
+    fun lockScreenPermissionDialog() {
+        AlertDialog.Builder(context)
+            .setTitle("Allow notification in the lock screen")
+            .setMessage("Please allow show notification in the lock screen and for a background process")
+            .setPositiveButton("Allow") { _, _ -> navigateToLockScreenPermission() }
+            .setNegativeButton("No", null)
+            .show()
+            .setCancelable(true)
+    }
+
     fun navigateToLockScreenPermission() {
         val intent = Intent(APP_PERM_EDITOR)
         intent.setClassName(

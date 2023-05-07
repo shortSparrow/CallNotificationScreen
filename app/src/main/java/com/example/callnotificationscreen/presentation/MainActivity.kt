@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         if (xiomiHelper.isXiaomi()) {
             if (xiomiHelper.isShowOnLockScreenPermissionEnable() != true) {
                 // need for show incomingCall activity on lock screen for xiomi
-                xiomiHelper.navigateToLockScreenPermission()
+                xiomiHelper.lockScreenPermissionDialog()
             }
 
             // need for ability get fcm push anytime
