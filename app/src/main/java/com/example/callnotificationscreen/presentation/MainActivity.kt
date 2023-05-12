@@ -9,7 +9,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.callnotificationscreen.CallNotificationApp.Companion.TAG
 import com.example.callnotificationscreen.R
-import com.example.callnotificationscreen.domain.NotificationReceiver
+import com.example.callnotificationscreen.services.LocalNotificationReceiver
 import com.example.callnotificationscreen.utils.SCHEDULE_TIME
 import com.example.callnotificationscreen.utils.XiomiHelper
 import com.google.android.gms.tasks.OnCompleteListener
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         val pendingIntent = PendingIntent.getBroadcast(
             this,
             0,
-            NotificationReceiver.build(this),
+            LocalNotificationReceiver.createNewIntent(this),
             PendingIntent.FLAG_IMMUTABLE
         )
 

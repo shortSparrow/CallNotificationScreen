@@ -11,14 +11,14 @@ import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.domain.IncomingCallHandler
 import com.example.callnotificationscreen.utils.FlashlightUtils
 import com.example.callnotificationscreen.utils.NOTIFICATION_ID
-import com.example.callnotificationscreen.utils.turnScreenOnAndKeyguardOff
+import com.example.callnotificationscreen.utils.turnLockScreenOnAndKeyguardOff
 
 
 class IncomingCallActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        turnScreenOnAndKeyguardOff()
+        turnLockScreenOnAndKeyguardOff()
         IncomingCallHandler.addCallDismissListener(::dismissActionListener)
         setContentView(R.layout.activity_incoming_call)
 

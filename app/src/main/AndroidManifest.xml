@@ -50,10 +50,10 @@
         </service>
 
         <receiver
-            android:name=".services.NotificationDismissedReceiver"
+            android:name=".services.NotificationDeletedReceiver"
             android:exported="false" />
         <receiver
-            android:name=".domain.NotificationReceiver"
+            android:name=".services.LocalNotificationReceiver"
             android:enabled="true" />
 
         <!--

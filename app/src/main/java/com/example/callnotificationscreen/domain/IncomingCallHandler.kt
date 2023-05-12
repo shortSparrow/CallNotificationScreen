@@ -19,7 +19,7 @@ import com.example.callnotificationscreen.R
 import com.example.callnotificationscreen.presentation.ConversationActivity
 import com.example.callnotificationscreen.presentation.DismissDummyActivity
 import com.example.callnotificationscreen.presentation.IncomingCallActivity
-import com.example.callnotificationscreen.services.NotificationDismissedReceiver
+import com.example.callnotificationscreen.services.NotificationDeletedReceiver
 import com.example.callnotificationscreen.utils.CHANNEL_ID
 import com.example.callnotificationscreen.utils.FlashlightUtils
 import com.example.callnotificationscreen.utils.getBitmapFromVectorDrawable
@@ -98,7 +98,7 @@ object IncomingCallHandler : IncomingCallDismissListener() {
         notificationId: Int
     ): NotificationCompat.Builder {
         return NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.arrow_up_float)
+            .setSmallIcon(R.drawable.call)
             .setPriority(NotificationCompat.PRIORITY_MAX) // must be at least HIGH
             .setSound(soundUri)
             .setCategory(NotificationCompat.CATEGORY_CALL)
@@ -134,7 +134,7 @@ object IncomingCallHandler : IncomingCallDismissListener() {
         )
 
 
-        val deleteIntent = NotificationDismissedReceiver.createNewIntent(context, notificationId)
+        val deleteIntent = NotificationDeletedReceiver.createNewIntent(context, notificationId)
         val deletePendingIntent = PendingIntent.getBroadcast(
             context,
             notificationId, // Here I user id as requestCode because with requestCode as constant I had unexpected behavior with multiple notifications

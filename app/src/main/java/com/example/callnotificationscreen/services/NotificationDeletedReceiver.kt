@@ -6,7 +6,7 @@ import android.content.Intent
 import com.example.callnotificationscreen.domain.IncomingCallHandler
 import com.example.callnotificationscreen.utils.NOTIFICATION_ID
 
-class NotificationDismissedReceiver: BroadcastReceiver() {
+class NotificationDeletedReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         // HERE you can implement logic on delete notification or just use the same on dismiss
         intent?.let {
@@ -18,7 +18,7 @@ class NotificationDismissedReceiver: BroadcastReceiver() {
 
     companion object {
         fun createNewIntent(context: Context, notificationId: Int?): Intent {
-            val incomingCallIntent = Intent(context, NotificationDismissedReceiver::class.java)
+            val incomingCallIntent = Intent(context, NotificationDeletedReceiver::class.java)
             incomingCallIntent.putExtra(NOTIFICATION_ID, notificationId)
             return incomingCallIntent
         }

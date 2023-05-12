@@ -6,8 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.view.WindowManager
 
-
-fun Activity.turnScreenOnAndKeyguardOff() {
+fun Activity.showOnLockScreen() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
         setShowWhenLocked(true)
         setTurnScreenOn(true)
@@ -18,10 +17,14 @@ fun Activity.turnScreenOnAndKeyguardOff() {
                     or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
         )
     }
+}
+
+fun Activity.turnLockScreenOnAndKeyguardOff() {
+    showOnLockScreen()
 
     with(getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            requestDismissKeyguard(this@turnScreenOnAndKeyguardOff, null)
+            requestDismissKeyguard(this@turnLockScreenOnAndKeyguardOff, null)
         }
     }
 }

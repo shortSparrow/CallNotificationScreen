@@ -8,7 +8,7 @@
 
 > `Flashlights is optional, because on the emulator it crashes the app so be careful`
 
-
+---
 
 ### Usage
 You can use local schedule push notifications or real. For creating local notifications just press the button in the main activity. For real push notifications create a Firebase project, then add google-service.json to the project. Get the device test token and now you can send push, but remember, FirebaseConsole can send only Display Messages, but you need Data Messages. because only this type trigger the onMessageReceived() callback even if your app is in foreground/background/killed. So for sending Data Messages use Postman with this structure (in data you can put any keys)
@@ -38,3 +38,16 @@ Unfortunately, a notification on some devices will not invoke your service becau
 Excepted for pure Android, I implemented support for Xiaomi devices:
 - Checks permission and if they are denied, the user will see a popup that asks to navigate to the additional notification setting and accept show notification in wake lock, and background process for showing full-screen intent when the device is locked
 - Checks autostart permission and if it is denied, the user will see a popup that asks to navigate to autostart settings and enable autostart for this app for service of listening push notification will not be killed. Also a possible way for Xiaomi to use com.google.android.c2dm.permission.SEND with a broadcast receiver, but I prefer to autostart 
+
+---
+
+### Examples
+#### Pure Android
+
+https://user-images.githubusercontent.com/43185533/236693601-94b3a4ea-79fb-428f-a080-5a81b9d0e7fc.mov
+
+#### Android Xiamoi
+
+https://user-images.githubusercontent.com/43185533/236693634-8c1ae16d-f324-47cd-a046-f772c31fda3b.mov
+
+

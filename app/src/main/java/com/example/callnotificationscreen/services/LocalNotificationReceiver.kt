@@ -1,11 +1,13 @@
-package com.example.callnotificationscreen.domain
+package com.example.callnotificationscreen.services
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.example.callnotificationscreen.domain.IncomingCallHandler
+import com.example.callnotificationscreen.domain.NotificationData
 
 
-class NotificationReceiver : BroadcastReceiver() {
+class LocalNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val notificationId = System.currentTimeMillis().toInt()
 
@@ -20,8 +22,8 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        fun build(context: Context): Intent {
-            return Intent(context, NotificationReceiver::class.java)
+        fun createNewIntent(context: Context): Intent {
+            return Intent(context, LocalNotificationReceiver::class.java)
         }
     }
 }
